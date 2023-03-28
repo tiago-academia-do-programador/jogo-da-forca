@@ -4,62 +4,140 @@
     {
         static void Main(string[] args)
         {
-            // escolher uma palavra
-            string palavraSecreta = "MELANCIA";
+            string palavraEncontrada;
+            string palavraSecreta = EscolherPalavraAleatoria();
 
-            char[] letrasEncontradas = new char[palavraSecreta.Length];
+            char[] letrasEncontradas = InicializarLetrasEncontradas(palavraSecreta.Length);
 
-            for (int caractere = 0; caractere < letrasEncontradas.Length; caractere++)
-                letrasEncontradas[caractere] = '_';
-
-            bool acertou = false, enforcou = false;
             int erros = 0;
 
-            Console.WriteLine("/****************/");
-            Console.WriteLine("/ Jogo de Forca */");
-            Console.WriteLine("/****************/");
+            ApresentarTitulo();
 
             do
             {
                 DesenharForca(erros);
 
-                Console.WriteLine(letrasEncontradas);
+                ApresentarLetrasEncontradas(letrasEncontradas);
 
-                // receber o input do jogador
-                Console.Write("Qual o seu chute? ");
-                char chute = Convert.ToChar(Console.ReadLine());
-
-                bool letraFoiEncontrada = false;
-
-                // comparar o chute com cada letra da palavraSecreta
-                for (int i = 0; i < palavraSecreta.Length; i++)
-                {
-                    // se o chute for igual a palavra secreta
-                    if (chute == palavraSecreta[i])
-                    {
-                        letrasEncontradas[i] = chute;
-                        letraFoiEncontrada = true;
-                    }
-                }
+                bool letraFoiEncontrada = VerificarAcerto(palavraSecreta, letrasEncontradas);
 
                 if (letraFoiEncontrada == false)
                     erros++;
 
-                // caso o usuário acerte a palavra inteira
-                string palavraEncontrada = new string(letrasEncontradas);
+                palavraEncontrada = new string(letrasEncontradas);
 
-                acertou = palavraEncontrada == palavraSecreta;
-                enforcou = erros == 5;
-
-                if (acertou)
+                if (JogadorAcertou(palavraEncontrada, palavraSecreta))
                     Console.WriteLine($"Você acertou a palavra {palavraSecreta}, parabéns!");
-                else if (enforcou)
+
+                else if (JogadorPerdeu(erros))
                     Console.WriteLine("Que azar! Tente novamente!");
 
-            } while (acertou == false && enforcou == false);
-            
+            } while (!JogadorAcertou(palavraEncontrada, palavraSecreta) && !JogadorPerdeu(erros));
 
             Console.ReadLine();
+        }
+
+        static bool JogadorPerdeu(int erros)
+        {
+            return erros == 5;
+        }
+
+        private static bool VerificarAcerto(string palavraSecreta, char[] letrasEncontradas)
+        {
+            bool letraFoiEncontrada = false;
+
+            char chute = ObterPalpite();
+
+            for (int i = 0; i < palavraSecreta.Length; i++)
+            {
+                bool chuteAcertouLetra = chute == palavraSecreta[i];
+
+                if (chuteAcertouLetra)
+                {
+                    letrasEncontradas[i] = chute;
+                    letraFoiEncontrada = true;
+                }
+            }
+
+            return letraFoiEncontrada;
+        }
+
+        static bool JogadorAcertou(string palavraEncontrada, string palavraSecreta)
+        {
+            return palavraEncontrada == palavraSecreta;
+        }
+
+        private static char ObterPalpite()
+        {
+            Console.Write("Qual o seu chute? ");
+            char chute = Convert.ToChar(Console.ReadLine());
+            return chute;
+        }
+
+        static char[] InicializarLetrasEncontradas(int tamanhoDoArray)
+        {
+            char[] letrasEncontradas = new char[tamanhoDoArray];
+
+            for (int caractere = 0; caractere < letrasEncontradas.Length; caractere++)
+                letrasEncontradas[caractere] = '_';
+
+            return letrasEncontradas;
+        }
+
+        private static void ApresentarLetrasEncontradas(char[] letrasEncontradas)
+        {
+            Console.WriteLine();
+            Console.WriteLine(letrasEncontradas);
+            Console.WriteLine();
+        }
+
+        private static void ApresentarTitulo()
+        {
+            Console.WriteLine("/****************/");
+            Console.WriteLine("/ Jogo de Forca */");
+            Console.WriteLine("/****************/");
+        }
+
+        private static string EscolherPalavraAleatoria()
+        {
+            string[] palavras = {
+                "ABACATE",
+                "ABACAXI",
+                "ACEROLA",
+                "ACAI",
+                "ARACA",
+                "ABACATE",
+                "BACABA",
+                "BACURI",
+                "BANANA",
+                "CAJA",
+                "CAJU",
+                "CARAMBOLA",
+                "CUPUACU",
+                "GRAVIOLA",
+                "GOIABA",
+                "JABUTICABA",
+                "JENIPAPO",
+                "MACA",
+                "MANGABA",
+                "MANGA",
+                "MARACUJA",
+                "MURICI",
+                "PEQUI",
+                "PITANGA",
+                "PITAYA",
+                "SAPOTI",
+                "TANGERINA",
+                "UMBU",
+                "UVA",
+                "UVAIA"
+            };
+
+            Random random = new Random();
+
+            int indiceEscolhido = random.Next(palavras.Length);
+
+            return palavras[indiceEscolhido];
         }
 
         private static void DesenharForca(int quantidadeErros)
@@ -76,7 +154,7 @@
             Console.WriteLine(" ___________        ");
             Console.WriteLine(" |/        |        ");
             Console.WriteLine(" |        {0}       ", cabecaDoBoneco);
-            Console.WriteLine(" |        {0}{1}{2} ", bracoEsquerdo, tronco,  bracoDireito);
+            Console.WriteLine(" |        {0}{1}{2} ", bracoEsquerdo, tronco, bracoDireito);
             Console.WriteLine(" |        {0}       ", troncoBaixo);
             Console.WriteLine(" |        {0}       ", pernas);
             Console.WriteLine(" |                  ");
