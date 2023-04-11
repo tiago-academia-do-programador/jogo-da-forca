@@ -4,145 +4,39 @@
     {
         static void Main(string[] args)
         {
-            string palavraEncontrada;
-            string palavraSecreta = EscolherPalavraAleatoria();
+            Forca jogo = new Forca();
 
-            char[] letrasEncontradas = InicializarLetrasEncontradas(palavraSecreta.Length);
-
-            int erros = 0;
-
-            ApresentarTitulo();
-
-            do
+            while (true)
             {
-                DesenharForca(erros);
+                ApresentarTitulo();
 
-                ApresentarLetrasEncontradas(letrasEncontradas);
+                DesenharForca(jogo.Erros);
 
-                bool letraFoiEncontrada = VerificarAcerto(palavraSecreta, letrasEncontradas);
+                ApresentarMensagem("As letras encontradas até agora são: " + jogo.PalavraParcial);
 
-                if (letraFoiEncontrada == false)
-                    erros++;
+                char palpite = ObterPalpite();
 
-                palavraEncontrada = new string(letrasEncontradas);
-
-                if (JogadorAcertou(palavraEncontrada, palavraSecreta))
-                    Console.WriteLine($"Você acertou a palavra {palavraSecreta}, parabéns!");
-
-                else if (JogadorPerdeu(erros))
-                    Console.WriteLine("Que azar! Tente novamente!");
-
-            } while (!JogadorAcertou(palavraEncontrada, palavraSecreta) && !JogadorPerdeu(erros));
+                if (jogo.JogadorAcertou(palpite) || jogo.JogadorPerdeu())
+                {
+                    ApresentarMensagem(jogo.mensagemFinal);
+                    break;
+                }
+            }
 
             Console.ReadLine();
         }
 
-        static bool JogadorPerdeu(int erros)
+        static void ApresentarTitulo()
         {
-            return erros == 5;
-        }
+            Console.Clear();
 
-        private static bool VerificarAcerto(string palavraSecreta, char[] letrasEncontradas)
-        {
-            bool letraFoiEncontrada = false;
-
-            char chute = ObterPalpite();
-
-            for (int i = 0; i < palavraSecreta.Length; i++)
-            {
-                bool chuteAcertouLetra = chute == palavraSecreta[i];
-
-                if (chuteAcertouLetra)
-                {
-                    letrasEncontradas[i] = chute;
-                    letraFoiEncontrada = true;
-                }
-            }
-
-            return letraFoiEncontrada;
-        }
-
-        static bool JogadorAcertou(string palavraEncontrada, string palavraSecreta)
-        {
-            return palavraEncontrada == palavraSecreta;
-        }
-
-        private static char ObterPalpite()
-        {
-            Console.Write("Qual o seu chute? ");
-            char chute = Convert.ToChar(Console.ReadLine());
-            return chute;
-        }
-
-        static char[] InicializarLetrasEncontradas(int tamanhoDoArray)
-        {
-            char[] letrasEncontradas = new char[tamanhoDoArray];
-
-            for (int caractere = 0; caractere < letrasEncontradas.Length; caractere++)
-                letrasEncontradas[caractere] = '_';
-
-            return letrasEncontradas;
-        }
-
-        private static void ApresentarLetrasEncontradas(char[] letrasEncontradas)
-        {
-            Console.WriteLine();
-            Console.WriteLine(letrasEncontradas);
-            Console.WriteLine();
-        }
-
-        private static void ApresentarTitulo()
-        {
             Console.WriteLine("/****************/");
             Console.WriteLine("/ Jogo de Forca */");
             Console.WriteLine("/****************/");
         }
 
-        private static string EscolherPalavraAleatoria()
+        static void DesenharForca(int quantidadeErros)
         {
-            string[] palavras = {
-                "ABACATE",
-                "ABACAXI",
-                "ACEROLA",
-                "ACAI",
-                "ARACA",
-                "ABACATE",
-                "BACABA",
-                "BACURI",
-                "BANANA",
-                "CAJA",
-                "CAJU",
-                "CARAMBOLA",
-                "CUPUACU",
-                "GRAVIOLA",
-                "GOIABA",
-                "JABUTICABA",
-                "JENIPAPO",
-                "MACA",
-                "MANGABA",
-                "MANGA",
-                "MARACUJA",
-                "MURICI",
-                "PEQUI",
-                "PITANGA",
-                "PITAYA",
-                "SAPOTI",
-                "TANGERINA",
-                "UMBU",
-                "UVA",
-                "UVAIA"
-            };
-
-            Random random = new Random();
-
-            int indiceEscolhido = random.Next(palavras.Length);
-
-            return palavras[indiceEscolhido];
-        }
-
-        private static void DesenharForca(int quantidadeErros)
-        {
-            // operação ternária
             string cabecaDoBoneco = quantidadeErros >= 1 ? " o " : " ";
             string bracoEsquerdo = quantidadeErros >= 3 ? "/" : " ";
             string tronco = quantidadeErros >= 2 ? "x" : " ";
@@ -150,7 +44,7 @@
             string bracoDireito = quantidadeErros >= 3 ? @"\" : " ";
             string pernas = quantidadeErros >= 4 ? "/ \\" : " ";
 
-            Console.Clear();
+            Console.WriteLine();
             Console.WriteLine(" ___________        ");
             Console.WriteLine(" |/        |        ");
             Console.WriteLine(" |        {0}       ", cabecaDoBoneco);
@@ -160,6 +54,21 @@
             Console.WriteLine(" |                  ");
             Console.WriteLine(" |                  ");
             Console.WriteLine("_|____              ");
+        }
+
+        static void ApresentarMensagem(string mensagem)
+        {
+            Console.WriteLine();
+            Console.WriteLine(mensagem);
+        }
+
+        static char ObterPalpite()
+        {
+            Console.WriteLine();
+            Console.Write("Qual o seu palpite? ");
+            char palpite = Convert.ToChar(Console.ReadLine());
+
+            return palpite;
         }
     }
 }
